@@ -38,9 +38,17 @@ class MasterViewController: UITableViewController {
     }
 
     func insertNewObject(_ sender: Any) {
-        objects.insert(NSDate(), at: 0)
-        let indexPath = IndexPath(row: 0, section: 0)
-        self.tableView.insertRows(at: [indexPath], with: .automatic)
+        
+        let alert = UIAlertController(title: "Give a title", message: "Enter a text", preferredStyle: .alert)
+        alert.addTextField { (textField) in
+            textField.text = "Input"
+        }
+        alert.addAction(UIAlertAction(title: "Add!", style: .default, handler: { [weak alert] (_) in
+            let textField = alert?.textFields![0]
+            self.objects.insert((textField?.text!)! as String, at: 0)
+            print("Text field: \(textField?.text)")
+        }))
+        self.present(alert, animated: true, completion: nil)
     }
 
     // MARK: - Segues
@@ -48,9 +56,9 @@ class MasterViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! NSDate
+                let object = objects[indexPath.row] as! String
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
+                controller.detailItem = object 
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
@@ -70,7 +78,7 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row] as! NSDate
+        let object = objects[indexPath.row] as! String
         cell.textLabel!.text = object.description
         return cell
     }

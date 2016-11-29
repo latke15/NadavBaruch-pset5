@@ -11,8 +11,12 @@ import Foundation
 class ToDoManager {
     static let sharedInstance = ToDoManager()
     
-    //This prevents others from using the default '()' initializer for this class.
+    /// database
+    private let db = DatabaseHelper()
+    
+    // This prevents others from using the default '()' initializer for this class.
     private init() {
     
     }
+    
 }
