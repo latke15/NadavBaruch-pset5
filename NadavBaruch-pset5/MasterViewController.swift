@@ -11,7 +11,7 @@ import UIKit
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
-    var objects = [Any]()
+    var objects = [String]()
 
 
     override func viewDidLoad() {
@@ -45,8 +45,9 @@ class MasterViewController: UITableViewController {
         }
         alert.addAction(UIAlertAction(title: "Add!", style: .default, handler: { [weak alert] (_) in
             let textField = alert?.textFields![0]
-            self.objects.insert((textField?.text!)! as String, at: 0)
+            self.objects.append((textField?.text!)! as String)
             print("Text field: \(textField?.text)")
+            self.tableView.reloadData()
         }))
         self.present(alert, animated: true, completion: nil)
     }
@@ -56,7 +57,7 @@ class MasterViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! String
+                let object = objects[indexPath.row] 
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
                 controller.detailItem = object 
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
@@ -78,7 +79,7 @@ class MasterViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row] as! String
+        let object = objects[indexPath.row] 
         cell.textLabel!.text = object.description
         return cell
     }

@@ -78,31 +78,31 @@ class DatabaseHelper {
         }
     }
     
-    func read(index: Int, table: String) throws -> String? {
-        var result: String?
-        var count = 0
-        do {
-            
-            for user in try db!.prepare(table) {
-                if table == "lists" {
-                    if count == index {
-//                        result = user[title]
-                    }
-                    count += 1
-                }
-                if table == "notes" {
-                    if count == index {
-//                        result = user[todo]
-                    }
-                }
-            }
-        } catch {
-            // error handling
-            throw error
-            
-        }
-        return result
-    }
+//    func read(index: Int, table: String) throws -> String? {
+////        let result: String?
+//        var count = 0
+//        do {
+//            
+//            for user in try db!.prepare(table) {
+//                if table == "lists" {
+//                    if count == index {
+////                        result = user[title]
+//                    }
+//                    count += 1
+//                }
+//                if table == "notes" {
+//                    if count == index {
+////                        result = user[todo]
+//                    }
+//                }
+//            }
+//        } catch {
+//            // error handling
+//            throw error
+//            
+//        }
+//        return result
+//    }
     
     func readCheck(index: Int) throws -> Bool? {
         

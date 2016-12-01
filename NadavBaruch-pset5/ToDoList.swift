@@ -10,4 +10,8 @@ import Foundation
 
 class ToDoList {
     
+    let listArray = [String]()
+    let listID = [Int]()
+    let listTitle = [String]()
+    
 }

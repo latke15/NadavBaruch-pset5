@@ -10,4 +10,9 @@ import Foundation
 
 class ToDoItem {
     
+    let toDoItem = [String]()
+    let title = [String]()
+    let id = [Int]()
+    let check = [Bool]()
+    
 }
