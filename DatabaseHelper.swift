@@ -12,14 +12,14 @@ import SQLite
 class DatabaseHelper {
     
     // MARK: SQLite database
+    // variables
     private var db: Connection?
-    
     private let lists = Table("lists")
     private let notes = Table("notes")
     private let id = Expression<Int>("id")
-    private let todo = Expression<String>("todo")
+    private let todo = Expression<String?>("todo")
     private let check = Expression<Bool>("check")
-    private let title = Expression<String>("title")
+    private let title = Expression<String?>("title")
     
     init?() {
         do {
@@ -60,17 +60,18 @@ class DatabaseHelper {
         }
     }
     
-    func create(note: String) throws {
-        
+    func createList(todo: String) throws {
+        let listNote = ToDoList()
         let insertLists = lists.insert(self.title <- title)
-        let insertNotes = notes.insert(self.todo <- todo, self.check <- check, self.title <- title)
         
         do {
             
             let rowIDLists = try db!.run(insertLists)
-            let rowIDNotes = try db!.run(insertNotes)
             print(rowIDLists)
-            print(rowIDNotes)
+            
+            listNote.listTitle = title
+            print("INSERTTEXT",listNote.listTitle.copy())
+            ToDoManager.sharedInstance.toDoLists.append(listNote)
             
         } catch {
             // error handling
@@ -78,44 +79,42 @@ class DatabaseHelper {
         }
     }
     
-//    func read(index: Int, table: String) throws -> String? {
-////        let result: String?
-//        var count = 0
-//        do {
-//            
-//            for user in try db!.prepare(table) {
-//                if table == "lists" {
-//                    if count == index {
-////                        result = user[title]
-//                    }
-//                    count += 1
-//                }
-//                if table == "notes" {
-//                    if count == index {
-////                        result = user[todo]
-//                    }
-//                }
-//            }
-//        } catch {
-//            // error handling
-//            throw error
-//            
-//        }
-//        return result
-//    }
-    
-    func readCheck(index: Int) throws -> Bool? {
-        
-        var result = false
-        var count = 0
+    func createNote(todo: String, title: String) throws {
+        let item = ToDoItem()
+        let insertNotes = notes.insert(self.todo <- todo, self.check <- false, self.title <- title)
         
         do {
+        
+            let rowIDNotes = try db!.run(insertNotes)
+            print(rowIDNotes)
             
-            for user in try db!.prepare(notes) {
-                if count == index {
-                    result = user[check]
+            item.title = title
+            item.check = false
+            item.toDoItem = todo
+            ToDoManager.sharedInstance.toDoItem.append(item)
+            
+            for element in ToDoManager.sharedInstance.toDoLists{
+                if element.listTitle == title {
+                    element.toDoArray.append(item)
                 }
-                count += 1
+            }
+            
+        } catch {
+            // error handling
+            throw error
+        }
+    }
+    
+    func readList(index: Int) throws -> String? {
+        let result: String?
+        var count = 0
+        do {
+            
+            for user in try db!.prepare(lists) {
+                    if count == index {
+                        result = user[title]
+                    }
+                    count += 1
             }
         } catch {
             // error handling
@@ -125,62 +124,82 @@ class DatabaseHelper {
         return result
     }
     
-    func checkSwitch(index: Int) throws {
+    func read() throws {
+    do {
         
-        var rowID: Int
-        var rowCheck: Bool
-        rowID = 0
-        rowCheck = false
+        for list in try db!.prepare(lists) {
+            
+            let listItem = ToDoList()
+            
+            listItem.listTitle = list[todo]!
+            
+            for note in try db!.prepare(notes) {
+                let toDoItem = ToDoItem()
+                
+                if listItem.listTitle == note[todo] {
+                    toDoItem.toDoItem = note[todo]!
+                    toDoItem.check = note[check]
+                    toDoItem.title = note[title]!
+                    listItem.toDoArray.append(toDoItem)
+            }
+                
+            ToDoManager.sharedInstance.toDoLists.append(listItem)
+                
+            }
+        }
+    } catch {
+        // error handling
+        throw error
+    }
+        
+    func readListID(index: Int) throws -> Int? {
+        let result: Int?
         var count = 0
-        
         do {
-            for row in try db!.prepare(notes.select(id, check)) {
+        
+            for user in try db!.prepare(lists) {
                 if count == index {
-                    rowID = (row[id])
-                    rowCheck = row[check]
+                    result = user[id]
                 }
                 count += 1
             }
         } catch {
-            throw error
-        }
-        
-        let checkState = notes.filter(id == rowID)
-        
-        if(rowCheck == false) {
-            do {
-                print(try db!.run(checkState.update(check <- true)))
-            } catch {
-                print(error)
-            }
-        } else {
-            do {
-                print(try db!.run(checkState.update(check <- false)))
-            } catch {
-                print(error)
-            }
-        }
-    }
-    
-    func countRows() throws -> Int? {
-        var count = 0
-        do {
-            
-            count = try db!.scalar(notes.select(todo.count))
-            
-        } catch {
-            
             // error handling
             throw error
+                
         }
-        return count
-        
+        return result
     }
     
-    func deleteRows(index: Int) throws {
+    func deleteList(index: Int) throws {
         var rowId = Int()
+        var rowTitle = String()
         var count = 0
         
+        do {
+            for checkId in try db!.prepare(lists) {
+                if count == index {
+                    rowId = checkId[id]
+                    rowTitle = checkId[title]!
+                }
+                count += 1
+            }
+            let list = lists.filter(id == rowId)
+            let note = notes.filter(rowTitle == title)
+            
+            try db!.run(list.delete())
+            try db!.run(note.delete())
+            
+            ToDoManager.sharedInstance.toDoLists.remove(at: index)
+        } catch {
+            print("delete failed: \(error)")
+        }
+    }
+        
+    func deleteNote(index: Int, title: String) throws {
+        var rowId = Int()
+        var count = 0
+    
         do {
             for checkId in try db!.prepare(notes) {
                 if count == index {
@@ -189,10 +208,18 @@ class DatabaseHelper {
                 count += 1
             }
             let note = notes.filter(id == rowId)
-//            try db!.run(todo.delete())
+        
+            try db!.run(note.delete())
+        
+            for row in ToDoManager.sharedInstance.toDoLists{
+                if row.listTitle == title{
+                    row.toDoArray.remove(at: index)
+                }
+            }
+            ToDoManager.sharedInstance.toDoLists.remove(at: index)
         } catch {
             print("delete failed: \(error)")
         }
     }
 }
-
+}

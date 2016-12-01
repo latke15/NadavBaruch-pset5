@@ -8,10 +8,18 @@
 
 import Foundation
 
-class ToDoList {
+class ToDoList: NSCopying {
     
-    let listArray = [String]()
-    let listID = [Int]()
-    let listTitle = [String]()
+    var toDoArray = [ToDoItem]()
+    var listID = [Int]()
+    var listTitle = String()
+    
+    init() {
+        
+    }
+    func copy(with zone: NSZone? = nil) -> Any {
+        let copy = ToDoList()
+        return copy
+    }
     
 }

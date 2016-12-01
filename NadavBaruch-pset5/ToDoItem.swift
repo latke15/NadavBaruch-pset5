@@ -8,11 +8,19 @@
 
 import Foundation
 
-class ToDoItem {
+class ToDoItem: NSCopying {
     
-    let toDoItem = [String]()
-    let title = [String]()
-    let id = [Int]()
-    let check = [Bool]()
+    var toDoItem = String()
+    var title = String()
+    var check = Bool()
+    
+    init() {
+        
+    }
+    
+    func copy(with zone: NSZone? = nil) -> Any {
+        let copy = ToDoItem()
+        return copy
+    }
     
 }
