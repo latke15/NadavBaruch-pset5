@@ -11,8 +11,6 @@ import UIKit
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
-    var objects = [String]()
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,14 +37,15 @@ class MasterViewController: UITableViewController {
 
     func insertNewObject(_ sender: Any) {
         
-        let alert = UIAlertController(title: "Give a title", message: "Enter a text", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Give a title", message: "Enter a title for your list", preferredStyle: .alert)
         alert.addTextField { (textField) in
-            textField.text = "Input"
+            textField.placeholder = "Title"
         }
         alert.addAction(UIAlertAction(title: "Add!", style: .default, handler: { [weak alert] (_) in
             let textField = alert?.textFields![0]
-            self.objects.append((textField?.text!)! as String)
             print("Text field: \(textField?.text)")
+            
+            ToDoManager.sharedInstance.write(toDoItem: (textField?.text!)!, title: "none", tableName: "lists")
             self.tableView.reloadData()
         }))
         self.present(alert, animated: true, completion: nil)
@@ -57,11 +56,13 @@ class MasterViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] 
+                
+                let listTitle = ToDoManager.sharedInstance.selectListname(index: indexPath.row)
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object 
+                controller.detailItem = ("\(listTitle)")
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
+                tableView.deselectRow(at: [indexPath.row], animated: true)
             }
         }
     }
@@ -73,14 +74,13 @@ class MasterViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return objects.count
+        return ToDoManager.sharedInstance.count(title: "none", tableName: "lists")
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 
-        let object = objects[indexPath.row] 
-        cell.textLabel!.text = object.description
+        cell.textLabel!.text = ToDoManager.sharedInstance.read(index: indexPath.row, title: "unused", tableName: "lists").0
         return cell
     }
 
@@ -91,13 +91,18 @@ class MasterViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            objects.remove(at: indexPath.row)
+            ToDoManager.sharedInstance.delete(index: indexPath.row, title: "unused", tableName: "lists")
             tableView.deleteRows(at: [indexPath], with: .fade)
+            NotificationCenter.default.post(name: .reload, object: nil)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
     }
 
 
+}
+
+extension Notification.Name {
+    static let reload = Notification.Name("reload")
 }
 

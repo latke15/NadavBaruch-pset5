@@ -7,19 +7,12 @@
 //
 
 import Foundation
+import SQLite
 
-class ToDoList: NSCopying {
+class ToDoList {
     
-    var toDoArray = [ToDoItem]()
-    var listID = [Int]()
-    var listTitle = String()
-    
-    init() {
-        
-    }
-    func copy(with zone: NSZone? = nil) -> Any {
-        let copy = ToDoList()
-        return copy
-    }
+    let listID = Expression<Int>("ID")
+    let listTitle = Expression<String>("title")
+
     
 }

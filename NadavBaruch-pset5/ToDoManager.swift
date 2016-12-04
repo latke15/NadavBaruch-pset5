@@ -16,65 +16,84 @@ class ToDoManager {
     
     // array of the todo-lists
     var toDoLists = [ToDoList]()
+    var toDoItems = [ToDoItem]()
     
     // This prevents others from using the default '()' initializer for this class.
     private init() {
         
-    
-    }
-    
-    //Check contents
-    func checkContents() {
-        for item in toDoLists {
-            print("item",item.listTitle)
+        if db == nil {
+            print("error")
         }
+    
     }
     
-    //Functie die read
-    func read() throws {
-        do {
-            try db!.read()
-        } catch {
-            throw error
-        }
-    }
-    
-    
-    //create tablelist
-    func insertList(item: String) throws {
-        do {
-            try db!.createList(todo: item)
-        } catch {
-            throw error
-        }
-    }
-    
-    //create tablenote
-    func insertNote(title: String, todo: String) throws {
+    func count(title: String, tableName: String) -> Int {
+        
+        var count: Int = 0
         
         do {
-            try db!.createNote(todo: todo, title: title)
+            count = try db!.countRows(title: title, tableName: tableName)
         } catch {
-            throw error
+            print(error)
         }
+        
+        return(count)
+    }
+    
+    func write(toDoItem: String, title: String, tableName: String) {
+        do {
+            try db!.add(toDoItem: toDoItem, title: title, tableName: tableName)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func read(index: Int, title: String, tableName: String) -> (String?, Bool) {
+        
+        var title: String? = ""
+        var completed: Bool = false
+        
+        do {
+            title = try db!.populate(index: index, title: title!, tableName: tableName)
+            completed = try db!.populateCompleted(index: index, title: title!, tableName: "notes")
+        } catch {
+            print(error)
+        }
+        
+        return(title, completed)
+    }
+    
+    func delete(index: Int, title: String, tableName: String) {
+        do {
+            if tableName == "notes" {
+                try db!.deleteTitle(index: index, title: title)
+            } else {
+                try db!.deleteList(index: index)
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
+    func selectListname(index: Int) -> String? {
+        
+        var listname: String? = ""
+        
+        do {
+            listname = try db!.selectListname(index: index)
+        } catch {
+            print(error)
+        }
+        
+        return(listname)
         
     }
     
-    //delete tablelist
-    func deleteList(indexPath: Int) throws {
+    func completedSwitch(index: Int, title: String) {
         do {
-            try db!.deleteList(index: indexPath)
+            try db!.completedSwitch(index: index, title: title)
+            print("index \(index), title \(title)")
         } catch {
-            throw error
+            print(error)
         }
-    }
-    
-    //delete tablenote
-    func deleteDetail(indexPath: Int, title: String) throws {
-        do {
-            try db!.deleteNote(index: indexPath, title: title)
-        } catch {
-            throw error
-        }
-}
-}
+    }}

@@ -7,20 +7,13 @@
 //
 
 import Foundation
+import SQLite
 
-class ToDoItem: NSCopying {
+class ToDoItem {
     
-    var toDoItem = String()
-    var title = String()
-    var check = Bool()
-    
-    init() {
-        
-    }
-    
-    func copy(with zone: NSZone? = nil) -> Any {
-        let copy = ToDoItem()
-        return copy
-    }
+    let id = Expression<Int>("ID")
+    let toDoItem = Expression<String>("item")
+    let title = Expression<String>("title")
+    let check = Expression<Bool>("check")
     
 }
