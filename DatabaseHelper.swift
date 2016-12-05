@@ -86,7 +86,7 @@ class DatabaseHelper {
                 let selection = notes.filter(toDoItem.title == title)
                 for row in try db!.prepare(selection) {
                     if count == index {
-                        result = "\(row[toDoItem.title])"
+                        result = "\(row[toDoItem.toDoItem])"
                     }
                     count += 1
                 }
@@ -196,7 +196,7 @@ class DatabaseHelper {
             let selection = notes.filter(toDoItem.title == title)
             for row in try db!.prepare(selection) {
                 if count == index {
-                    rowID = Int(row[toDoItem.id])
+                    rowID = row[toDoItem.id]
                 }
                 count += 1
             }
