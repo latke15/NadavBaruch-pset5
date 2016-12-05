@@ -35,7 +35,7 @@ class DatabaseHelper {
     private func setupDatabase() throws {
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         do {
-            db = try Connection("\(path)/db.sqlite3")
+            db = try Connection("\(path)/db2.sqlite3")
             try createTable()
         } catch {
             // error handling
@@ -76,7 +76,7 @@ class DatabaseHelper {
         }
     }
     
-    func populate(index: Int, title: String, tableName: String) throws -> String? {
+    func read(index: Int, title: String, tableName: String) throws -> String? {
         
         var result: String?
         var count = 0
@@ -105,7 +105,7 @@ class DatabaseHelper {
         return result
     }
     
-    func populateCompleted(index: Int, title: String, tableName: String) throws -> Bool {
+    func readCheck(index: Int, title: String, tableName: String) throws -> Bool {
         
         var result = false
         var count = 0
@@ -127,13 +127,13 @@ class DatabaseHelper {
     
     // MARK: - Modifying tables
     
-    func add(toDoItem: String, title: String, tableName: String) throws {
+    func add(item: String, title: String, tableName: String) throws {
         
         var rowID: Int = 0
         
         do {
             if tableName == "notes" {
-                rowID = try db!.run(notes.insert(toDoItem.toDoItem <- toDoItem, toDoItem.title <- title, toDoItem.check <- false))
+                rowID = Int(try db!.run(notes.insert(toDoItem.toDoItem <- item, toDoItem.title <- title, toDoItem.check <- false)))
             } else {
                 rowID = Int(try db!.run(lists.insert(toDoList.listTitle <- title)))
             }
@@ -145,12 +145,12 @@ class DatabaseHelper {
         
     }
     
-    func completedSwitch(index: Int, title: String) throws {
+    func checkSwitch(index: Int, title: String) throws {
         
         var rowID: Int
-        var rowCompleted: Bool
+        var rowCheck: Bool
         rowID = 0
-        rowCompleted = false
+        rowCheck = false
         var count = 0
         
         do {
@@ -158,7 +158,7 @@ class DatabaseHelper {
             for row in try db!.prepare(selection) {
                 if count == index {
                     rowID = row[toDoItem.id]
-                    rowCompleted = row[toDoItem.check]
+                    rowCheck = row[toDoItem.check]
                 }
                 count += 1
             }
@@ -168,7 +168,7 @@ class DatabaseHelper {
         
         let rowState = notes.filter(toDoItem.id == rowID)
         
-        if(rowCompleted == false) {
+        if(rowCheck == false) {
             do {
                 let number = try db!.run(rowState.update(toDoItem.check <- true))
                 print("\(number) rows completed")

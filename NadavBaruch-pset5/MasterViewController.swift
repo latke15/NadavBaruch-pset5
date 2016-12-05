@@ -45,7 +45,7 @@ class MasterViewController: UITableViewController {
             let textField = alert?.textFields![0]
             print("Text field: \(textField?.text)")
             
-            ToDoManager.sharedInstance.write(toDoItem: (textField?.text!)!, title: "none", tableName: "lists")
+            ToDoManager.sharedInstance.write(toDoItem: "none", title: (textField?.text!)!, tableName: "lists")
             self.tableView.reloadData()
         }))
         self.present(alert, animated: true, completion: nil)

@@ -60,7 +60,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         // source: http://stackoverflow.com/questions/39603922/getting-row-of-uitableview-cell-on-button-press-swift-3
         let switchPos = (sender as AnyObject).convert(CGPoint.zero, to: self.tableView)
         let indexPath = self.tableView.indexPathForRow(at: switchPos)
-        ToDoManager.sharedInstance.completedSwitch(index: (indexPath?.row)!, title: detailItem!)
+        ToDoManager.sharedInstance.checkSwitch(index: (indexPath?.row)!, title: detailItem!)
     }
     
     func configureView() {

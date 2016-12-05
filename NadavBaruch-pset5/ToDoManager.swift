@@ -42,7 +42,7 @@ class ToDoManager {
     
     func write(toDoItem: String, title: String, tableName: String) {
         do {
-            try db!.add(toDoItem: toDoItem, title: title, tableName: tableName)
+            try db!.add(item: toDoItem, title: title, tableName: tableName)
         } catch {
             print(error)
         }
@@ -54,8 +54,8 @@ class ToDoManager {
         var completed: Bool = false
         
         do {
-            title = try db!.populate(index: index, title: title!, tableName: tableName)
-            completed = try db!.populateCompleted(index: index, title: title!, tableName: "notes")
+            title = try db!.read(index: index, title: title!, tableName: tableName)
+            completed = try db!.readCheck(index: index, title: title!, tableName: "notes")
         } catch {
             print(error)
         }
@@ -89,9 +89,9 @@ class ToDoManager {
         
     }
     
-    func completedSwitch(index: Int, title: String) {
+    func checkSwitch(index: Int, title: String) {
         do {
-            try db!.completedSwitch(index: index, title: title)
+            try db!.checkSwitch(index: index, title: title)
             print("index \(index), title \(title)")
         } catch {
             print(error)

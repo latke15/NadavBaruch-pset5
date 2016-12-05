@@ -12,7 +12,7 @@ import SQLite
 class ToDoItem {
     
     let id = Expression<Int>("ID")
-    let toDoItem = Expression<String>("item")
+    let toDoItem = Expression<String>("toDoItem")
     let title = Expression<String>("title")
     let check = Expression<Bool>("check")
     
