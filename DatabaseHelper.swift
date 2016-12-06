@@ -35,7 +35,7 @@ class DatabaseHelper {
     private func setupDatabase() throws {
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
         do {
-            db = try Connection("\(path)/db2.sqlite3")
+            db = try Connection("\(path)/db3.sqlite3")
             try createTable()
         } catch {
             // error handling
@@ -122,7 +122,7 @@ class DatabaseHelper {
             throw error
         }
         
-        return(result)
+        return result
     }
     
     // MARK: - Modifying tables

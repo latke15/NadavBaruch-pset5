@@ -40,9 +40,9 @@ class ToDoManager {
         return(count)
     }
     
-    func write(toDoItem: String, title: String, tableName: String) {
+    func write(item: String, title: String, tableName: String) {
         do {
-            try db!.add(item: toDoItem, title: title, tableName: tableName)
+            try db!.add(item: item, title: title, tableName: tableName)
         } catch {
             print(error)
         }

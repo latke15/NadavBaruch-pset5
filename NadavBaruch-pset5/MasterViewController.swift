@@ -45,7 +45,7 @@ class MasterViewController: UITableViewController {
             let textField = alert?.textFields![0]
             print("Text field: \(textField?.text)")
             
-            ToDoManager.sharedInstance.write(toDoItem: "none", title: (textField?.text!)!, tableName: "lists")
+            ToDoManager.sharedInstance.write(item: "none", title: (textField?.text!)!, tableName: "lists")
             self.tableView.reloadData()
         }))
         self.present(alert, animated: true, completion: nil)
@@ -91,7 +91,7 @@ class MasterViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            ToDoManager.sharedInstance.delete(index: indexPath.row, title: "unused", tableName: "lists")
+            ToDoManager.sharedInstance.delete(index: indexPath.row, title: "none", tableName: "lists")
             tableView.deleteRows(at: [indexPath], with: .fade)
             NotificationCenter.default.post(name: .reload, object: nil)
         } else if editingStyle == .insert {

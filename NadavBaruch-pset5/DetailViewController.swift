@@ -43,7 +43,7 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
         alert.addAction(UIAlertAction(title: "Add!", style: .default, handler: { [weak alert] (_) in
             let textField = alert?.textFields![0]
     
-            ToDoManager.sharedInstance.write(toDoItem: (textField?.text!)!, title: self.detailItem!, tableName: "notes")
+            ToDoManager.sharedInstance.write(item: (textField?.text!)!, title: self.detailItem!, tableName: "notes")
             self.tableView.reloadData()
         }))
         self.present(alert, animated: true, completion: nil)
@@ -83,8 +83,8 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var rows: Int = 0
-        if(detailItem != nil) {
-            rows = ToDoManager.sharedInstance.count(title: detailItem!, tableName: "notes")
+        if(self.detailItem != nil) {
+            rows = ToDoManager.sharedInstance.count(title: self.detailItem!, tableName: "notes")
         }
         
         return rows
@@ -94,8 +94,8 @@ class DetailViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoCell", for: indexPath) as! ToDoCell
         
-        cell.todoNote.text = ToDoManager.sharedInstance.read(index: indexPath.row, title: detailItem!, tableName: "notes").0
-        let completedState = ToDoManager.sharedInstance.read(index: indexPath.row, title: detailItem!, tableName: "notes").1
+        cell.todoNote.text = ToDoManager.sharedInstance.read(index: indexPath.row, title: self.detailItem!, tableName: "notes").0
+        let completedState = ToDoManager.sharedInstance.read(index: indexPath.row, title: self.detailItem!, tableName: "notes").1
         
         cell.checkSwitch.setOn(completedState, animated: true)
         
